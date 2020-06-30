@@ -1,0 +1,7 @@
+.Grid-tile {
+    border: 1px solid #e1dfdd;
+    background-color: rgb(237, 235, 233);
+    text-align: center;
+    width: 32px;
+    height: 32px;
+}
