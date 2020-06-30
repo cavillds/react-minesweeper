@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ErrorIcon, FlagIcon, Text } from '@fluentui/react-northstar';
+import { Button, Text } from '@fluentui/react-northstar';
 import './Tile.css';
 
 class Tile extends React.Component {
@@ -46,7 +46,7 @@ class Tile extends React.Component {
         return <Button
         className="Grid-tile" 
         iconOnly={true}
-        icon={this.props.status === 'flagged' ? <FlagIcon size='large' /> : this.props.status === 'mine' ? <ErrorIcon /> : ''}
+        icon={this.props.status === 'flagged' ? '🚩' : this.props.status === 'mine' ? '💣' : ''} 
         onClick={this.handleClick}
         onContextMenu={this.handleClick}>  
         </Button>;
