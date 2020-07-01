@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider, teamsTheme } from '@fluentui/react-northstar';
-import App from './App';
+import MinesweeperApp from './MinesweeperApp';
 
 test('Renders correctly', () => {
   //TODO Add test

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Grid } from '@fluentui/react-northstar';
+import PropTypes from 'prop-types';
 import Tile from '../Tile/Tile';
 import './GameGrid.css';
 
@@ -26,6 +27,13 @@ class GameGrid extends React.Component {
         <Grid className="Game-grid" content={tiles} columns={+this.props.cols}></Grid>
         );    
     }
+}
+
+GameGrid.propTypes = {
+    status: PropTypes.string,
+    handleClick: PropTypes.func,
+    handleFlag: PropTypes.func,
+    tiles: PropTypes.array
 }
 
 export default GameGrid;

@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "react-minesweeper",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -34,6 +34,9 @@
     ]
   },
   "devDependencies": {
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-react": "^7.20.3",
+    "prettier": "^2.0.5",
     "react-test-renderer": "^16.13.1"
   }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text } from '@fluentui/react-northstar';
+import PropTypes from 'prop-types';
 import './Timer.css';
 
 class Timer extends React.Component {
@@ -42,11 +43,15 @@ class Timer extends React.Component {
 
     tick() {
         if(this.props.enabled) {
-            this.setState((state, props) => ({
+            this.setState((state) => ({
                 'elapsedTime': state.elapsedTime + 1
             }));
         }        
     }
+}
+
+Timer.propTypes = {
+    enabled: PropTypes.bool
 }
 
 export default Timer;

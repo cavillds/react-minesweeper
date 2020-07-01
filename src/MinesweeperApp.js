@@ -51,7 +51,7 @@ class MinesweeperApp extends React.Component {
   }
 
   handleClick(row, col) {
-    this.setState((state, props) => {
+    this.setState((state) => {
         const tile = state.tiles[row][col];
         let newState = {
             'status': state.status,
@@ -80,7 +80,7 @@ class MinesweeperApp extends React.Component {
   }
 
   handleFlag(row, col) {
-    this.setState((state, props) => {
+    this.setState((state) => {
         const tile = state.tiles[row][col];
         if(tile.status === 'flagged') {
             tile.status = 'closed';
@@ -101,7 +101,7 @@ class MinesweeperApp extends React.Component {
   }
 
   resetGame() {
-    this.setState((state, props) => {
+    this.setState((state) => {
       return {
         status: 'created',
         tiles: initTiles(state.rows, state.cols, state.mines),
@@ -114,7 +114,7 @@ class MinesweeperApp extends React.Component {
 
   handleLevelChange(e, menu) {
     const level = menu.activeIndex;
-    this.setState((state, props) => {
+    this.setState(() => {
       if(level === 0) {
         return {
           rows: 9,
