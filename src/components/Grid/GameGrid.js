@@ -30,6 +30,7 @@ class GameGrid extends React.Component {
 }
 
 GameGrid.propTypes = {
+    cols: PropTypes.number,
     status: PropTypes.string,
     handleClick: PropTypes.func,
     handleFlag: PropTypes.func,
