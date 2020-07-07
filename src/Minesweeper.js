@@ -1,3 +1,16 @@
+export const GameState = {
+    CREATED: 'created',
+    STARTED: 'started',
+    LOST: 'lost',
+    WON: 'won'
+}
+
+export const TileState = {
+    CLOSED: 'closed',
+    OPEN: 'open',
+    FLAGGED: 'flagged',
+    MINE: 'mine'
+}
 
 export function initTiles(rows, cols, mines) {
     let tiles = [];
@@ -9,7 +22,7 @@ export function initTiles(rows, cols, mines) {
                 'col': j,
                 'isMine': false,
                 'mines': 0,
-                'status': 'closed'
+                'status': TileState.CLOSED
             };
             row.push(tile);
         }
@@ -22,21 +35,27 @@ export function initTiles(rows, cols, mines) {
 function initMines(tiles, mines) {
     let remaining = mines;
     while(remaining > 0) {
-        const row = Math.floor(Math.random() * tiles.length);
-        const col = Math.floor(Math.random() * tiles[0].length);
-        if(!tiles[row][col].isMine) {
-            tiles[row][col].isMine = true;
-            updateMineCount(tiles, row, col - 1);
-            updateMineCount(tiles, row, col + 1);
-            updateMineCount(tiles, row - 1, col);
-            updateMineCount(tiles, row + 1, col);
-            updateMineCount(tiles, row - 1, col - 1);
-            updateMineCount(tiles, row - 1, col + 1);
-            updateMineCount(tiles, row + 1, col - 1);
-            updateMineCount(tiles, row + 1, col + 1);
-            remaining--;
-        }            
+        initMine(tiles);
+        remaining--;              
     }
+}
+
+function initMine(tiles) {
+    let row = Math.floor(Math.random() * tiles.length);
+    let col = Math.floor(Math.random() * tiles[0].length);
+    while(tiles[row][col].isMine) {
+        row = Math.floor(Math.random() * tiles.length);
+        col = Math.floor(Math.random() * tiles[0].length);
+    }
+    tiles[row][col].isMine = true;
+    updateMineCount(tiles, row, col - 1);
+    updateMineCount(tiles, row, col + 1);
+    updateMineCount(tiles, row - 1, col);
+    updateMineCount(tiles, row + 1, col);
+    updateMineCount(tiles, row - 1, col - 1);
+    updateMineCount(tiles, row - 1, col + 1);
+    updateMineCount(tiles, row + 1, col - 1);
+    updateMineCount(tiles, row + 1, col + 1);
 }
 
 function updateMineCount(tiles, row, col) {
@@ -51,13 +70,13 @@ export function revealNeighbors(tiles, row, col) {
     neighbors.splice(-1, 0, [row + 1, col],[row - 1, col],[row, col + 1],[row, col - 1]);
     neighbors.splice(-1, 0, [row + 1, col + 1], [row + 1, col - 1], [row - 1, col + 1], [row - 1, col - 1]);
     while(neighbors.length > 0) {
-        let neighbor = neighbors.shift();
+        let neighbor = neighbors.pop();
         const nRow = neighbor[0];
         const nCol = neighbor[1];
         if(nRow >= 0 && nRow < tiles.length && nCol >= 0 && nCol < tiles[row].length) {
             const tile = tiles[nRow][nCol];
-            if(tile.status === 'closed' && !tile.isMine) {
-                tile.status = 'open';
+            if(tile.status === TileState.CLOSED && !tile.isMine) {
+                tile.status = TileState.OPEN;
                 openTiles += 1;
                 if(tile.mines === 0) {
                     neighbors.splice(-1, 0, [nRow + 1, nCol], [nRow - 1, nCol], [nRow, nCol + 1], [nRow, nCol - 1]);
@@ -72,8 +91,8 @@ export function revealNeighbors(tiles, row, col) {
 export function revealMines(tiles) {
     for(let row of tiles) {
         for(let tile of row) {
-            if(tile.isMine && tile.status === 'closed') {
-                tile.status = 'flagged';
+            if(tile.isMine && tile.status === TileState.CLOSED) {
+                tile.status = TileState.FLAGGED;
             }
         }            
     }

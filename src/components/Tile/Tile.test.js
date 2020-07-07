@@ -3,7 +3,7 @@ import ReactTestUtils from 'react-dom/test-utils';
 import { Provider, teamsTheme } from '@fluentui/react-northstar';
 import { render } from '@testing-library/react';
 import { getByText } from '@testing-library/dom';
-import Tile from './Tile';
+import { Tile } from './Tile';
 
 const objectUnderTest = (status, enabled=true, onClick=null, onFlag=null) => (<Provider theme={teamsTheme}>
                                                         <Tile

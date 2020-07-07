@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider, teamsTheme } from '@fluentui/react-northstar';
 import './index.css';
-import MinesweeperApp from './MinesweeperApp';
+import { MinesweeperApp } from './MinesweeperApp';
 
 ReactDOM.render(<Provider theme={teamsTheme}>
     <MinesweeperApp />

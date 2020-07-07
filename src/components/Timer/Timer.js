@@ -3,7 +3,7 @@ import { Text } from '@fluentui/react-northstar';
 import PropTypes from 'prop-types';
 import './Timer.css';
 
-function Timer (props) {
+export function Timer (props) {
 
     const [elapsedTime, setElapsedTime] = useState(0);
 
@@ -26,5 +26,3 @@ function Timer (props) {
 Timer.propTypes = {
     enabled: PropTypes.bool
 }
-
-export default Timer;

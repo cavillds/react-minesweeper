@@ -1,167 +1,144 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, EmojiIcon, Flex, Header, Menu, Text } from '@fluentui/react-northstar';
-import GameGrid from './components/Grid/GameGrid';
-import Timer from './components/Timer/Timer';
-import { initTiles, revealNeighbors, revealMines } from './Minesweeper';
+import { GameGrid } from './components/Grid/GameGrid';
+import { Timer } from './components/Timer/Timer';
+import { GameState, initTiles, revealNeighbors, revealMines, TileState } from './Minesweeper';
 import './MinesweeperApp.css';
 
-class MinesweeperApp extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.handleLevelChange = this.handleLevelChange.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleFlag = this.handleFlag.bind(this);
-    this.resetGame = this.resetGame.bind(this);
-    this.menuItems = [{
-      key: 'game',
-      content: 'Game',
-      menu: {
-        onActiveIndexChange: this.handleLevelChange,
-        items: [
-          {
-            key: 'beginner',
-            content: 'Beginner'
-          }, {
-            key: 'intermediate',
-            content: 'Intermediate'
-          }, {
-            key: 'advanced',
-            content: 'Advanced'
-          }
-        ]
+const MENU_ITEMS = [{
+  key: 'game',
+  content: 'Game',
+  menu: {
+    items: [
+      {
+        key: 'beginner',
+        content: 'Beginner'
+      }, {
+        key: 'intermediate',
+        content: 'Intermediate'
+      }, {
+        key: 'advanced',
+        content: 'Advanced'
       }
-    },{
-      key: 'display',
-      content: 'Display'
-    },{
-      key: 'controls',
-      content: 'Controls'
-    }];
-    this.state = {
-        rows: 9,
-        cols: 9,
-        mines: 10,
-        status: 'created',
-        tiles: initTiles(9, 9, 10),
-        openTiles: 0,
-        flags: 0,
-        createdAt: Date.now()
-    };
+    ]
   }
+},{
+  key: 'display',
+  content: 'Display'
+},{
+  key: 'controls',
+  content: 'Controls'
+}];
 
-  handleClick(row, col) {
-    this.setState((state) => {
-        const tile = state.tiles[row][col];
-        let newState = {
-            'status': state.status,
-            'tiles': state.tiles
-        };
-        if(tile.isMine) {
-            tile.status = 'mine';
-            newState.status = 'lost';
-        } else {
-            tile.status = 'open';
-            state.openTiles += 1;
-            if(tile.mines === 0) {
-                state.openTiles += revealNeighbors(state.tiles, row, col);
-                }            
-            const isGameWon = state.openTiles === state.rows * state.cols - state.mines;
-            newState.status = isGameWon ? 'won' : state.status === 'created' ? 'started': state.status;
-        }
-        if(newState.status === 'won' || newState.status === 'lost') {
-            revealMines(newState.tiles);
-            if(newState.status === 'won') {
-                newState.flags = state.mines;
-            }
-        }
-        return newState;
-    });
-  }
+export function MinesweeperApp() {
+  const [gameState, setGameState] = useState({
+    rows: 9,
+    cols: 9,
+    mines: 10,
+    status: GameState.CREATED,
+    tiles: initTiles(9, 9, 10),
+    openTiles: 0,
+    flags: 0,
+    createdAt: Date.now()
+  });
 
-  handleFlag(row, col) {
-    this.setState((state) => {
-        const tile = state.tiles[row][col];
-        if(tile.status === 'flagged') {
-            tile.status = 'closed';
-            return {
-                'status': 'started',
-                'flags': state.flags - 1,
-                'tiles': state.tiles
-            };
-        } else {
-            tile.status = 'flagged';
-            return {
-                'status': 'started',
-                'flags': state.flags + 1,
-                'tiles': state.tiles
-            }
-        } 
-    });
-  }
+  MENU_ITEMS[0].menu.onActiveIndexChange = (e, menu) => {
+    handleLevelChange(menu.activeIndex, gameState, setGameState);
+  };
 
-  resetGame() {
-    this.setState((state) => {
-      return {
-        status: 'created',
-        tiles: initTiles(state.rows, state.cols, state.mines),
-        openTiles: 0,
-        flags: 0,
-        createdAt: Date.now()
-      }
-    });
-  }
-
-  handleLevelChange(e, menu) {
-    const level = menu.activeIndex;
-    this.setState(() => {
-      if(level === 0) {
-        return {
-          rows: 9,
-          cols: 9,
-          mines: 10
-        }
-      } else if(level === 1) {
-        return {
-          rows: 16,
-          cols: 16,
-          mines: 40
-        }
-      } else if(level === 2) {
-        return {
-          rows: 16,
-          cols: 30,
-          mines: 99
-        }
-      }
-    });
-    this.resetGame();
-  }
-
-  render() {
-    return (<Flex className="App" column hAlign="center">
+  return (<Flex className="App" column hAlign="center">
       <Flex className="App-header-container" hAlign="center" column padding="padding.medium">
         <Header color="brand">
           Minesweeper
         </Header>
-        <Menu items={this.menuItems}></Menu>
+        <Menu items={MENU_ITEMS}></Menu>
       </Flex>
       <div className="Game-grid-container">
         <Flex className="Game-menu" space="between">
-            <Text weight="bold" size="large" className="Game-progress">{this.state.mines - this.state.flags}</Text>
-            <Button iconOnly text icon={<EmojiIcon outline size='large' />} onClick={this.resetGame}></Button>
-            <Timer key={this.state.createdAt} enabled={this.state.status === 'started'}></Timer>          
+            <Text weight="bold" size="large" className="Game-progress">{gameState.mines - gameState.flags}</Text>
+            <Button iconOnly text icon={<EmojiIcon outline size='large' />} onClick={() => {
+              const newState = Object.assign({}, gameState);
+              resetGame(newState);
+              setGameState(newState);
+            }}></Button>
+            <Timer key={gameState.createdAt} enabled={gameState.status === GameState.STARTED}></Timer>          
         </Flex>
         <GameGrid 
-        rows={this.state.rows} 
-        cols={this.state.cols} 
-        status={this.state.status} 
-        tiles={this.state.tiles} 
-        handleClick={this.handleClick}
-        handleFlag={this.handleFlag}></GameGrid>
+        rows={gameState.rows} 
+        cols={gameState.cols} 
+        status={gameState.status} 
+        tiles={gameState.tiles} 
+        handleClick={(row, col) => {handleClick(row, col, gameState, setGameState)}}
+        handleFlag={(row, col) => {handleFlag(row, col, gameState, setGameState)}}></GameGrid>
         </div>
     </Flex>);
-  }  
 }
 
-export default MinesweeperApp;
+function handleClick(row, col, gameState, setGameState) {  
+  const newState = Object.assign({}, gameState);
+  const tile = newState.tiles[row][col];
+  if(tile.isMine) {
+    tile.status = TileState.MINE;
+    if(newState.status === GameState.CREATED) {
+      //First click - reset tile
+    } else {
+      newState.status = GameState.LOST;
+    }
+    
+  } else {
+    tile.status = TileState.OPEN;
+    newState.openTiles += 1;
+    if(tile.mines === 0) {
+        newState.openTiles += revealNeighbors(newState.tiles, row, col);
+    }            
+    const isGameWon = newState.openTiles === gameState.rows * gameState.cols - gameState.mines;
+    newState.status = isGameWon ? GameState.WON : newState.status === GameState.CREATED ? GameState.STARTED: newState.status;
+  }
+  if(newState.status === GameState.WON || newState.status === GameState.LOST) {
+    revealMines(newState.tiles);
+    if(newState.status === GameState.WON) {
+        newState.flags = gameState.mines;
+    }
+  }
+  setGameState(newState);
+}
+
+function handleFlag(row, col, gameState, setGameState) {
+  const newState = Object.assign({}, gameState);
+  const tile = newState.tiles[row][col];
+  if(tile.status === TileState.FLAGGED) {
+    tile.status = TileState.CLOSED;
+    newState.flags -= 1;
+  } else {
+    tile.status = TileState.FLAGGED;
+    newState.flags += 1;
+  } 
+  setGameState(newState);
+}
+
+function resetGame(newState) {
+  newState.tiles = initTiles(newState.rows, newState.cols, newState.mines);
+  newState.openTiles = 0;
+  newState.flags = 0;
+  newState.status = GameState.CREATED;
+  newState.createdAt = Date.now();
+}
+
+function handleLevelChange(level, gameState, setGameState) {
+  const newState = Object.assign({}, gameState);
+  if(level === 0) {
+    newState.rows = 9;
+    newState.cols = 9;
+    newState.mines = 10;
+  } else if(level === 1) {
+    newState.rows = 16;
+    newState.cols = 16;
+    newState.mines = 40;
+  } else if(level === 2) {
+    newState.rows = 16;
+    newState.cols = 30;
+    newState.mines = 99;
+  }
+  resetGame(newState);
+  setGameState(newState);
+}

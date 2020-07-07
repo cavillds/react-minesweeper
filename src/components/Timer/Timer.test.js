@@ -1,7 +1,7 @@
 import React from 'react';
 import { Provider, teamsTheme } from '@fluentui/react-northstar';
 import { act, render } from '@testing-library/react';
-import Timer from './Timer';
+import { Timer } from './Timer';
 
 const objectUnderTest = (<Provider theme={teamsTheme}><Timer enabled={true}></Timer></Provider>);
 
