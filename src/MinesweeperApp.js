@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, EmojiIcon, Flex, Header, Menu, Text } from '@fluentui/react-northstar';
 import { GameGrid } from './components/Grid/GameGrid';
 import { Timer } from './components/Timer/Timer';
-import { GameState, initTiles, revealNeighbors, revealMines, TileState } from './Minesweeper';
+import { GameState, initTiles, revealNeighbors, revealMines, TileState, replaceMine } from './Minesweeper';
 import './MinesweeperApp.css';
 
 const MENU_ITEMS = [{
@@ -56,7 +56,7 @@ export function MinesweeperApp() {
       <div className="Game-grid-container">
         <Flex className="Game-menu" space="between">
             <Text weight="bold" size="large" className="Game-progress">{gameState.mines - gameState.flags}</Text>
-            <Button iconOnly text icon={<EmojiIcon outline size='large' />} onClick={() => {
+            <Button iconOnly text icon={gameState.status === GameState.LOST ? '☹' : '🙂'} onClick={() => {
               const newState = Object.assign({}, gameState);
               resetGame(newState);
               setGameState(newState);
@@ -77,15 +77,13 @@ export function MinesweeperApp() {
 function handleClick(row, col, gameState, setGameState) {  
   const newState = Object.assign({}, gameState);
   const tile = newState.tiles[row][col];
-  if(tile.isMine) {
+  if(newState.status === GameState.STARTED && tile.isMine) { 
     tile.status = TileState.MINE;
-    if(newState.status === GameState.CREATED) {
-      //First click - reset tile
-    } else {
-      newState.status = GameState.LOST;
-    }
-    
+    newState.status = GameState.LOST;    
   } else {
+    if(tile.isMine) {
+      replaceMine(newState.tiles, row, col);
+    }
     tile.status = TileState.OPEN;
     newState.openTiles += 1;
     if(tile.mines === 0) {

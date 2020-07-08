@@ -48,19 +48,34 @@ function initMine(tiles) {
         col = Math.floor(Math.random() * tiles[0].length);
     }
     tiles[row][col].isMine = true;
-    updateMineCount(tiles, row, col - 1);
-    updateMineCount(tiles, row, col + 1);
-    updateMineCount(tiles, row - 1, col);
-    updateMineCount(tiles, row + 1, col);
-    updateMineCount(tiles, row - 1, col - 1);
-    updateMineCount(tiles, row - 1, col + 1);
-    updateMineCount(tiles, row + 1, col - 1);
-    updateMineCount(tiles, row + 1, col + 1);
+    updateMineCount(tiles, row, col - 1, 1);
+    updateMineCount(tiles, row, col + 1, 1);
+    updateMineCount(tiles, row - 1, col, 1);
+    updateMineCount(tiles, row + 1, col, 1);
+    updateMineCount(tiles, row - 1, col - 1, 1);
+    updateMineCount(tiles, row - 1, col + 1, 1);
+    updateMineCount(tiles, row + 1, col - 1, 1);
+    updateMineCount(tiles, row + 1, col + 1, 1);
 }
 
-function updateMineCount(tiles, row, col) {
+function updateMineCount(tiles, row, col, count) {
     if(row >= 0 && row < tiles.length && col >= 0 && col < tiles[row].length) {
-        tiles[row][col].mines += 1;
+        tiles[row][col].mines += count;
+    }
+}
+
+export function replaceMine(tiles, row, col) {
+    while(tiles[row][col].isMine) {
+        tiles[row][col].isMine = false;
+        updateMineCount(tiles, row, col - 1, -1);
+        updateMineCount(tiles, row, col + 1, -1);
+        updateMineCount(tiles, row - 1, col, -1);
+        updateMineCount(tiles, row + 1, col, -1);
+        updateMineCount(tiles, row - 1, col - 1, -1);
+        updateMineCount(tiles, row - 1, col + 1, -1);
+        updateMineCount(tiles, row + 1, col - 1, -1);
+        updateMineCount(tiles, row + 1, col + 1, -1);
+        initMine(tiles);
     }
 }
 
